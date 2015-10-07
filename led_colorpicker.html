@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arduino - RGB LED control panel</title>
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css" />
+    <link href="style.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div id="color-picker"></div>
+        <p>
+            Current selected color:
+            <input type="text" value="#ff0000" id="chosenColor" />
+        </p>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="jqueryui/jquery-ui.js"></script>
+    <!-- <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/bower_components/jqueryui/ui/jquery-ui.js"></script>
+    <script src="/bower_components/jqueryui/ui/jquery.ui.draggable.js"></script> -->
+    <script src="hue-picker.js"></script>
+    <script>
+        //var socket = io.connect('http://192.168.56.101:8080');
+        var socket = io.connect(window.location.origin);
+
+        var huePicker = new HuePicker($("#color-picker"), {
+            width: 940,
+            height: 80
+        });
+
+        $(huePicker).on("changeColor", function(e, color) {
+            $("#chosenColor").val(color);
+            $("#marker circle").attr("fill", color);
+            socket.emit("changeColor", { color: color });
+        });
+    </script>
+</body>
+</html>

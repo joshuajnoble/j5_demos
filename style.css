@@ -1,0 +1,17 @@
+#color-picker { position: relative; margin-bottom: 25px; }
+#color-picker svg { position: absolute; top: 0; left: 0; }
+
+#marker {
+    cursor: pointer;
+    pointer-events: all;
+}
+
+#marker line {
+    stroke: black;
+    stroke-width: 2px;
+}
+
+#marker circle {
+    stroke-width: 2px;
+    stroke: black;
+}

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<link href="jqueryui/jquery-ui.css" rel="stylesheet">
+
+		<title>Haptic Motors</title>
+
+		<style>
+
+			.vibrate_holder
+			{
+				width:200px;
+				display:inline-block;
+
+			};
+
+			.vscroller
+			{
+				height:200px;
+				display:inline-block;
+				margin:20px;
+			};
+
+
+		</style>
+
+	</head>
+
+	<body>
+
+	<div class="vibrate_holder">
+		<h4>motor 1</h4>
+		<div>
+			<div id="slider1Duration" style="display:inline-block;margin-left:20px;"></div>
+			<div id="slider1Intensity" style="display:inline-block;margin-left:20px;"></div>
+		</div>
+	</div>
+
+	<div class="vibrate_holder">
+		<h4>motor 2</h4>
+		<div id="slider2Duration" style="display:inline-block;margin-left:20px;"></div>
+		<div id="slider2Intensity" style="display:inline-block;margin-left:20px;"></div>
+	</div>
+
+	<div class="vibrate_holder">
+		<h4>motor 3</h4>
+		<div id="slider3Duration" style="display:inline-block;margin-left:20px;"></div>
+		<div id="slider3Intensity" style="display:inline-block;margin-left:20px;"></div>
+	</div>
+
+	<div class="vibrate_holder">
+		<h4>motor 4</h4>
+		<div id="slider4Duration" style="display:inline-block;margin-left:20px;"></div>
+		<div id="slider4Intensity" style="display:inline-block;margin-left:20px;"></div>
+	</div>
+
+	<div class="vibrate_holder">
+		<h4>motor 5</h4>
+		<div id="slider5Duration" style="display:inline-block;margin-left:20px;"></div>
+		<div id="slider5Intensity" style="display:inline-block;margin-left:20px;"></div>
+	</div>
+
+	<script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="jqueryui/jquery-ui.js"></script>
+	<script>
+
+		var pwmPins = [3, 5, 6, 9, 10, 11];
+
+		var sliders = [
+
+			{duration:"#slider1Duration", intensity:"#slider1Intensity"},
+			{duration:"#slider2Duration", intensity:"#slider2Intensity"},
+			{duration:"#slider3Duration", intensity:"#slider3Intensity"},
+			{duration:"#slider4Duration", intensity:"#slider4Intensity"},
+			{duration:"#slider5Duration", intensity:"#slider5Intensity"}
+
+		];
+
+		for( var s in sliders )
+		{
+			console.log(sliders[s].duration + " " + sliders[s].intensity);
+
+			$( sliders[s].duration ).slider({
+		      orientation: "vertical",
+		      range: "min",
+		      min: 0,
+		      max: 100,
+		      value: 60,
+		      id:pwmPins[s],
+		      slide: function( event, ui )
+		      {
+		        var sid = $(this).slider("option", 'id');
+		        socket.emit("slider", {id:sid, val:ui.value * 100});
+		      }
+		    });
+		    
+		    $( sliders[s].intensity ).slider({
+		      orientation: "vertical",
+		      range: "min",
+		      min: 0,
+		      max: 100,
+		      value: 60,
+		      id:pwmPins[s],
+		      slide: function( event, ui )
+		      {
+		        var sid = $(this).slider("option", 'id');
+		        socket.emit("slider", {id:sid, val:ui.value * 100});
+		      }
+		    });
+
+		}
+
+      	var socket = io.connect(window.location.origin);
+
+		socket.on('connect', function () {
+        	console.log(" connected ");
+        	//this.emit('pres', {});
+
+      	});
+
+      	socket.on('disconnect', function () {
+      	});
+
+
+
+	</script>
+	</body>
+</html>

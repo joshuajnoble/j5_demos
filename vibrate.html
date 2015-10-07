@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<link href="jqueryui/jquery-ui.css" rel="stylesheet">
+
+		<title>Simple Vibration Motors</title>
+
+		<style>
+
+			.vibrate_holder
+			{
+				width:200px;
+				display:inline-block;
+
+			};
+
+			.vscroller
+			{
+				height:200px;
+				display:inline-block;
+				margin:20px;
+			};
+
+			.holder {
+				padding-top: 20px;
+				padding-bottom: 20px;
+			}
+
+
+		</style>
+
+	</head>
+
+	<body>
+
+	<div>
+		<button type="button" onclick="addEffect()">Add effect</button>
+	</div>
+
+	<form id="mainForm" action="trigger()">
+	<div class="holder">
+		<span>Pin<input class="effect_input" type="text" name="pin" id="0pin"></span>
+		<span>On<input type="radio" name="ON1" value="On" id="0On" checked="yes" ></span>
+		<span>Off<input type="radio" name="ON1" value="Off" id="0Off"></span>
+		<span>Duration<input class="effect_input" type="text" name="pin" id="0Duration"></span>
+	</div>
+	</form>
+
+	<div>
+		<button type="button" onclick="trigger()">Run effects</button>
+	</div>
+
+	<script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="jqueryui/jquery-ui.js"></script>
+	<script>
+
+		var forms = [
+
+			0
+
+		];
+
+		function trigger()
+		{
+
+			var behaviors = [];
+			for( var f in forms )
+			{
+				console.log(f);
+				var pin = $("#"+f+"pin").val();
+				var on = $("#"+f+"On").prop('checked') ;
+				// var off = $("#"+f+"Off").val();
+				var duration = $("#"+f+"Duration").val();
+
+				behaviors.push({pin:pin, on:on, duration:duration});
+			}
+			socket.emit("set_vibrate", behaviors);
+		}
+
+		function addEffect()
+		{
+			var formIndex = forms.length;
+
+			var newHTML = 
+				"<div class=\"holder\"> \
+					<span>Pin<input class=\"effect_input\" type=\"text\" name=\"pin\" id=\""+formIndex+"pin\"></span> \
+					<span>On<input type=\"radio\" name=\"ON" + (formIndex+1) + "\" value=\"On\" checked=\"yes\" id=\""+formIndex+"On\"></span> \
+					<span>Off<input type=\"radio\" name=\"ON" + (formIndex+1) + "\" value=\"On\" id=\""+formIndex+"Off\"></span> \
+					<span>Duration<input class=\"effect_input\" type=\"text\" name=\"pin\" id=\""+formIndex+"Duration\"></span> \
+				</div>";
+
+			$( "#mainForm" ).append( newHTML );
+
+			forms.push(formIndex);
+		}
+
+		function startHaptic()
+		{
+			socket.emit("start_haptic");
+		}
+
+      	var socket = io.connect(window.location.origin);
+
+		socket.on('connect', function () {
+        	console.log(" connected ");
+        	//this.emit('pres', {});
+
+      	});
+
+      	socket.on('disconnect', function () {
+      	});
+
+
+
+	</script>
+	</body>
+</html>

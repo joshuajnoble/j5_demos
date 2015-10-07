@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<link href="jqueryui/jquery-ui.css" rel="stylesheet">
+
+		<title>Haptic Motors</title>
+
+		<style>
+
+			.waveform_holder
+			{
+				/*width:200px;*/
+				display:inline-block;
+				margin:10px;
+			};
+
+			.effect_input {
+				width:50px;
+				margin-left: 10px;
+			}
+
+			.vscroller
+			{
+				height:200px;
+				display:inline-block;
+				margin:20px;
+			};
+
+
+		</style>
+
+	</head>
+
+	<body onload="startHaptic()">
+
+	<div>
+		<button type="button" onclick="addEffect()">Add effect</button>
+	</div>
+
+	<select id="haptic_type">
+	  <option>ERM</option>
+	  <option>LRA</option>
+	</select>
+
+	<div id="waveforms" class="waveform_holder">
+		<input class="effect_input" type="text" name="form1" id="effect1">
+	</div>
+
+	<div>
+		<button type="button" onclick="trigger()">Run effects</button>
+	</div>
+
+	<script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="jqueryui/jquery-ui.js"></script>
+	<script>
+
+		var pwmPins = [3, 5, 6, 9, 10, 11];
+
+		var forms = [
+
+			"#effect1"
+
+		];
+
+		function trigger()
+		{
+			var haptic_type = $( "#haptic_type" ).val();
+			var haptic_data = {type:haptic_type, waves:[]};
+
+
+			for( var f in forms )
+			{
+				haptic_data.waves.push($(forms[f]).val());
+			}
+			socket.emit("set_haptic", haptic_data);
+		}
+
+		function addEffect()
+		{
+			var formIndex = forms.length + 1;
+			$( "#waveforms" ).append( "<input class=\"effect_input\" type=\"text\" name=\"form" + formIndex + "\" id=\"effect"+ formIndex + "\">" );
+
+			forms.push("#effect"+formIndex);
+		}
+
+		function startHaptic()
+		{
+			socket.emit("start_haptic");
+		}
+
+      	var socket = io.connect(window.location.origin);
+
+		socket.on('connect', function () {
+        	console.log(" connected ");
+        	//this.emit('pres', {});
+
+      	});
+
+      	socket.on('disconnect', function () {
+      	});
+
+
+
+	</script>
+	</body>
+</html>
